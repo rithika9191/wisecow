@@ -35,3 +35,13 @@ jobs:
           tags: |
             ghcr.io/rithika9191/wisecow:latest
             ghcr.io/rithika9191/wisecow:${{ github.sha }}
+
+  deploy-to-kubernetes:
+    needs: build-and-push
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy to Minikube
+        run: |
+          kubectl set image deployment/wisecow wisecow=ghcr.io/rithika9191/wisecow:${{ github.sha }}
+          kubectl rollout status deployment/wisecow --timeout=180s
